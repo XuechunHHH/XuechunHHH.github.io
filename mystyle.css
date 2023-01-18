@@ -49,6 +49,13 @@
     color: black;
 }
 
+.main {
+    width:830px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
 .photos {
     width: 830px;
     height: 830px;
@@ -68,8 +75,9 @@
 }
 
 .photos-content {
+    width: 830px;
     margin-top: 51px;
-    margin-left: 213px;
+    margin-left: 12px;
     margin-right: auto;
     margin-bottom: -87px;
     font-family: Georgia, 'Times New Roman', Times, serif;
