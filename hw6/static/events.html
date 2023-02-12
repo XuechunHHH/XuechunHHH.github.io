@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events Search</title>
+    <link rel="stylesheet" type="text/css" href="../static/mystyle.css">
+    <script src="../static/search.js"></script>
+</head>
+<body>
+    <div id = "page">
+        <div class="container" id="container">
+        <form id="search">
+            <div>
+            
+                <div class="header">Events Search<hr></div>
+                <div>
+                    <label class="label required" for="keyword">Keyword</label>
+                    <input type="text" class="keyword" id="keyword" name="keyword" required>
+                </div>
+                <div>
+                    <label class="label" for="distance" style="margin-right: 172px;">Distance(miles)</label>
+                    <label class="label required" for="category">Category</label><br>
+                    <input class="distance" type="number" min="0" max="20" step="0.01" id="distance" name="distance" placeholder=10 required>
+                    <select class="category" id="category" name="category" required>
+                        <option class="option" value="Default" selected>Default</option>
+                        <option class="option" value="Music">Music</option>
+                        <option class="option" value="Sports">Sports</option>
+                        <option class="option" value="Arts & Theatre">Arts & Theatre</option>
+                        <option class="option" value="Film">Film</option>
+                        <option class="option" value="Miscellaneous">Miscellaneous</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="label required" for="location">Location</label>
+                    <input type="checkbox" id="checkbox" name="checkbox" style="margin-left: 10px;" onclick="changeState()">
+                    <label class="checkbox" for="checkbox">Auto-Detect Location</label>
+                    <input type="text" class="location" id="location" name="location" style="visibility: visible;" required>
+                </div>
+            
+            </div>
+            <div>
+                <button type="button" class="search" id='search' onclick="submitForm()" value="SEARCH">SEARCH</button>
+                <button type="button" class="clear" id="clear" onclick="clearForm()" value="CLEAR">CLEAR</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</body>
+</html>
