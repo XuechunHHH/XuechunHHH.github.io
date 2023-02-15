@@ -7,7 +7,7 @@ CATEGORY = {
     "Default":"",
     "Music":"KZFzniwnSyZfZ7v7nJ",
     "Sports":"KZFzniwnSyZfZ7v7nE",
-    "Arts & Theatre":"KZFzniwnSyZfZ7v7na",
+    "Arts":"KZFzniwnSyZfZ7v7na",
     "Film":"KZFzniwnSyZfZ7v7nn",
     "Miscellaneous":"KZFzniwnSyZfZ7v7n1"
     }
@@ -91,16 +91,16 @@ def venueDetail():
     print(str)
     res = requests.get(url).json()
     data = {
-        "name":res["_embedded"]["venues"][0]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "",
-        "address":res["_embedded"]["venues"][0]["address"]["line1"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "",
-        "postalCode":res["_embedded"]["venues"][0]["postalCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "",
-        "city":res["_embedded"]["venues"][0]["city"]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "",
-        "statecode":res["_embedded"]["venues"][0]["state"]["stateCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "",
-        "upcoming":res["_embedded"]["venues"][0]["url"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "",
+        "name":res["_embedded"]["venues"][0]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
+        "address":res["_embedded"]["venues"][0]["address"]["line1"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
+        "postalCode":res["_embedded"]["venues"][0]["postalCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
+        "city":res["_embedded"]["venues"][0]["city"]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
+        "statecode":res["_embedded"]["venues"][0]["state"]["stateCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
+        "upcoming":res["_embedded"]["venues"][0]["url"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
         "img":res["_embedded"]["venues"][0]["images"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() and "images" in res["_embedded"]["venues"][0].keys() else ""
     }
     jsonData = jsonify(data)
     return jsonData
 
 if __name__ =='__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=8080, debug=True)

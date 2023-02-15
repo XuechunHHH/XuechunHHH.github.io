@@ -51,9 +51,28 @@ function submitForm(){
         document.getElementById("location").reportValidity();
         return;
     }
+
+    if (document.getElementById("empty")) {
+		document.getElementById("empty").remove();
+	}
+    if (document.getElementById("table")) {
+		document.getElementById("table").remove();
+	}
+    if (document.getElementById("edetail")) {
+		document.getElementById("edetail").remove();
+	}
+    if (document.getElementById("vdetail")) {
+		document.getElementById("vdetail").remove();
+	}
+    if (document.getElementById("vmore")) {
+		document.getElementById("vmore").remove();
+	}
     
     keyword = document.getElementById("keyword").value;
 	category = document.getElementById("category").value;
+    if(category=="Arts & Theatre"){
+        category = "Arts";
+    }
 	distance = parseFloat(document.getElementById("distance").value);
     if(window.isNaN(distance)){
         distance = 10;
@@ -160,7 +179,7 @@ function createTable(){
         htmlText += "<td><img class=\"table_img\" src=\""+element["Icon"]+"\"></td>";
         htmlText += "<td><a href=\"javascript:void(0)\" id=\""+element["id"]+"\" class=\"eventlink eventlink:active\" onclick=\"eventDetail(this.id)\">"+ element["Event"]+"</a></td>";
         htmlText += "<td>"+element["Genre"]+"</td>";
-        htmlText += "<td><a href=\"javascript:void(0)\" id=\""+element["venue_id"]+"\" class= \"eventlink\">"+ element["Venue"]+"</a></td>";
+        htmlText += "<td>"+ element["Venue"]+"</td>";
         htmlText += "</tr>"
     }
 

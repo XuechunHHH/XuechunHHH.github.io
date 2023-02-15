@@ -264,8 +264,8 @@ a{
     text-decoration: none;
 }
 
-a:visited{
-    color:rgb(5, 132, 211);
+a:hover{
+    color:rgb(73, 29, 247);
     text-decoration: none;
 }
 
