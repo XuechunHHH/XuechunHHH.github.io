@@ -41,15 +41,13 @@ function clearForm(){
 
 function submitForm(){
     if (!document.getElementById("keyword").checkValidity()){
-        document.getElementById("keyword").setCustomValidity("Please fill out this field.")
         document.getElementById("keyword").reportValidity();
-        return;
+        return
     }
 
     if (!document.getElementById("location").checkValidity() && !document.getElementById("checkbox").checked){
-        document.getElementById("location").setCustomValidity("Please fill out this field.")
         document.getElementById("location").reportValidity();
-        return;
+        return
     }
 
     if (document.getElementById("empty")) {
@@ -236,6 +234,7 @@ function eventDetail(id){
                 edetail = eval('('+tomain.responseText+')');
                 console.log(edetail);
                 showEdetail();
+                document.getElementById("edetail").scrollIntoView(true);
             }
         }
     }
@@ -332,6 +331,7 @@ function venueDetail(str){
                 vdetail = eval('('+tomain.responseText+')');
                 console.log(vdetail);
                 showVdetail();
+                document.getElementById("vdetail").scrollIntoView(true);
             }
         }
     }
