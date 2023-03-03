@@ -6,6 +6,11 @@ let lng;
 let keyword;
 let category;
 let distance;
+
+function unique (arr) { 
+    return Array.from(new Set(arr)) 
+} 
+
 function changeState(){
     checkStatus = document.getElementById("checkbox").checked;
     if (checkStatus) {
@@ -101,6 +106,9 @@ function submitForm(){
             if (req.readyState == 4){
                 if (req.status == 200){
                     var doc = eval('('+req.responseText+')');
+                    if (doc['results'].length==0){
+                        createEmpty();
+                    }
                     lat = doc['results'][0]['geometry']['location']['lat'];
                     lng = doc['results'][0]['geometry']['location']['lng'];
                     processData(keyword,category,distance,lat,lng);
@@ -165,20 +173,24 @@ function createTable(){
     var etable = document.createElement("table");
     etable.id = "table";
     etable.setAttribute("class","table");
-    var htmlText = "<tr><div class=\"shadow\"><th id=\"date\" style=\"width:18%\">Date</th><th id=\"icon\" style=\"width:18%\">Icon</th>";
-    htmlText += "<th id=\"event\" onclick=\"sortTable(2)\">Event</th>";
-    htmlText += "<th id=\"genre\" style=\"width:13%\" onclick=\"sortTable(3)\">Genre</th>";
-    htmlText += "<th id=\"venue\" style=\"width:20%\" onclick=\"sortTable(4)\">Venue</th>";
-    htmlText += "</div></tr>"
+    var htmlText = "<thead><tr class=\"shadow\"><th id=\"date\" style=\"width:18%\">Date</th><th id=\"icon\" style=\"width:18%\">Icon</th>";
+    htmlText += "<th id=\"event\" style=\"cursor: pointer\" onclick=\"sortTable(2)\">Event</th>";
+    htmlText += "<th id=\"genre\" style=\"width:13%; cursor: pointer\" onclick=\"sortTable(3)\">Genre</th>";
+    htmlText += "<th id=\"venue\" style=\"width:20%; cursor: pointer\" onclick=\"sortTable(4)\">Venue</th>";
+    htmlText += "</tr></thead>"
     console.log(doc[0]);
     for (var i in doc){
         var element = doc[i];
-        htmlText += "<tr><td>"+element["localDate"]+"<br/>"+element["localTime"]+"</td>";
-        htmlText += "<td><img class=\"table_img\" src=\""+element["Icon"]+"\"></td>";
+        htmlText += "<tbody><tr><td>"+element["localDate"]+"<br/>"+element["localTime"]+"</td>";
+        if (element["Icon"].length!=0){
+            htmlText += "<td><img class=\"table_img\" src=\""+element["Icon"]+"\"></td>";
+        }else{
+            htmlText += "<td> N/A </td>";
+        }
         htmlText += "<td><a href=\"javascript:void(0)\" id=\""+element["id"]+"\" class=\"eventlink eventlink:active\" onclick=\"eventDetail(this.id)\">"+ element["Event"]+"</a></td>";
         htmlText += "<td>"+element["Genre"]+"</td>";
         htmlText += "<td>"+ element["Venue"]+"</td>";
-        htmlText += "</tr>"
+        htmlText += "</tr></tbody>"
     }
 
 
@@ -273,12 +285,12 @@ function showEdetail(){
     var htmlText = "<div class=\"etag\">Date</div><div class=\"eword\">"+edetail["localDate"]+" "+edetail["localTime"]+"</div>";
     htmlText += "<div class=\"etag\">Artist/Team</div>";
     if(edetail["attraction"].length == 0){
-        htmlText +="<div class=\"eword\">NA</div>";
+        htmlText +="<div class=\"eword\">N/A</div>";
     }else{
         htmlText +="<div class=\"ehref\"><span><a href=\""+edetail["attraction"][0]["url"]+"\" target=\"_blank\" style=\"color:rgb(5, 132, 211);\">"+edetail["attraction"][0]["name"]+"</a></span>";
         for (var i=1;i<edetail["attraction"].length;++i){
             if (edetail["attraction"][i]["name"].length!=0){
-                htmlText += "<span>|</span>";
+                htmlText += "<span style=\"color:white\"> | </span>";
                 htmlText += "<span><a href=\""+edetail["attraction"][i]["url"]+"\" target=\"_blank\" style=\"color:rgb(5, 132, 211);\">"+edetail["attraction"][i]["name"]+"</a></span>";
             }
         }
@@ -287,17 +299,23 @@ function showEdetail(){
     htmlText += "<div class=\"etag\">Venue</div><div class=\"eword\">"+edetail["venue"]+"</div>";
     htmlText += "<div class=\"etag\">Genres</div>";
     if(edetail["genre"].length == 0){
-        htmlText +="<div class=\"eword\">NA</div>";
+        htmlText +="<div class=\"eword\">N/A</div>";
     }else{
+        edetail["genre"] = unique(edetail["genre"]);
         htmlText += "<div class=\"eword\"><span>"+edetail["genre"][0]+"</span>";
         for (var i=1;i<edetail["genre"].length;++i){
-            if (edetail["genre"][i].length!=0){
-                htmlText += "<span>|</span>";
+            if (edetail["genre"][i].length!=0 && edetail["genre"][i] != "Undefined"){
+                htmlText += "<span> | </span>";
                 htmlText += "<span>"+edetail["genre"][i]+"</span>";
             }
         }
         htmlText += "</div>";
     }
+    if (edetail["pricerange"].length!=0){
+        htmlText += "<div class=\"etag\">Price Ranges</div>";
+        htmlText += "<div class=\"eword\">"+edetail["pricerange"]["min"]+" - "+edetail["pricerange"]["max"]+" "+edetail["pricerange"]["currency"]+"</div>"
+    }
+
     htmlText += "<div class=\"etag\">Ticket Status</div>";
     if (edetail["status"] == "onsale"){
         htmlText += "<span class=\"estatus\" style=\"background-color: green;\">On Sale</span>";
@@ -317,7 +335,7 @@ function showEdetail(){
     document.getElementById("page").appendChild(ediv);
     var vmore = document.createElement("div");
     vmore.id = "vmore";
-    vmore.innerHTML="<div class=\"vmore\">Show Venue Details</div><div class=\"v\" id=\""+edetail["venue"]+"\" onclick=\"venueDetail(this.id)\"></div>"
+    vmore.innerHTML="<div class=\"vmore\">Show Venue Details</div><div class=\"v\" id=\""+edetail["venue"].split(",")[0].replaceAll("&","%26")+"\" onclick=\"venueDetail(this.id)\"></div>"
     document.getElementById("page").appendChild(vmore);
 }
 
@@ -330,12 +348,37 @@ function venueDetail(str){
             if (tomain.status == 200){
                 vdetail = eval('('+tomain.responseText+')');
                 console.log(vdetail);
-                showVdetail();
+                if (vdetail["name"] == "N/A"){
+                    showVEmpty();
+                }else{
+                    showVdetail();
+                }
                 document.getElementById("vdetail").scrollIntoView(true);
             }
         }
     }
     tomain.send();
+}
+
+function showVEmpty(){
+    if (document.getElementById("vmore")) {
+        document.getElementById("vmore").remove();
+    }
+    if (document.getElementById("vdetail")) {
+        document.getElementById("vdetail").remove();
+    }
+    var vdiv = document.createElement("div");
+    vdiv.id = "vdetail";
+    vdiv.setAttribute("class","vdetail");
+    var vtitlediv = document.createElement("div");
+    vtitlediv.setAttribute("class","vtitlediv")
+    var vtitle = document.createElement("span");
+    vtitle.id = "vtitle";
+    vtitle.setAttribute("class","vtitle");
+    vtitle.innerText="No detail in this venue.";
+    vtitlediv.appendChild(vtitle);
+    vdiv.appendChild(vtitlediv);
+    document.getElementById("page").appendChild(vdiv);
 }
 
 function showVdetail(){
@@ -374,16 +417,24 @@ function showVdetail(){
     var box2 = document.createElement("div");
     box2.setAttribute("class","box2");
     vdiv.appendChild(box2);
-    var htmlText = "<span class=\"address\">Address: </span><span class=\"addword\">"+vdetail["address"]+"</span></br>";
-    htmlText +="<span class=\"addline\">"+vdetail["city"]+", "+vdetail["statecode"]+"</span></br>";
-    htmlText +="<span class=\"addline\">"+vdetail["postalCode"]+"</span></br>";
-    
+
+    var htmlText = "<div><table><tr><td align=\"right\">Address:&nbsp;</td><td align=\"left\">"+" "+vdetail["address"]+"</td></tr>";
+    htmlText += "<tr><td></td><td align=\"left\">"+vdetail["city"]+", "+vdetail["statecode"]+"</td></tr>";
+    htmlText += "<tr><td></td><td align=\"left\">"+vdetail["postalCode"]+"</td></tr></table></div>";
+
     var field = vdetail["address"]+vdetail["city"]+vdetail["statecode"]+vdetail["postalCode"];
     field = field.replaceAll(" ","+");
     field = field.replaceAll(".","%2E");
     field = field.replaceAll(",","%2C");
+    field = field.replaceAll("&","%26");
+    field = field.replaceAll("(","%28");
+    field = field.replaceAll(")","%29");
+    field = field.replaceAll("+","%2B");
+    field = field.replaceAll("/","%2F");
+    field = field.replaceAll(":","%3A");
     var gourl = "https://www.google.com/maps/search/?api=1&query="+field;
     htmlText +="<div class=\"gomap\"><a href=\""+gourl+"\" target=\"_blank\" class=\"gohref\">Open in Google Maps</a></div>";
+    console.log(htmlText);
     box1.innerHTML=htmlText;
  
     var box2text = "<div class=\"upcome\"><a href=\""+vdetail["upcoming"]+"\" target=\"_blank\" class=\"gohref\">More events at this venue</a></div>";

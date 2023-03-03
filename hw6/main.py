@@ -93,10 +93,10 @@ def venueDetail():
     data = {
         "name":res["_embedded"]["venues"][0]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
         "address":res["_embedded"]["venues"][0]["address"]["line1"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
-        "postalCode":res["_embedded"]["venues"][0]["postalCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
-        "city":res["_embedded"]["venues"][0]["city"]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
-        "statecode":res["_embedded"]["venues"][0]["state"]["stateCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
-        "upcoming":res["_embedded"]["venues"][0]["url"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() else "N/A",
+        "postalCode":res["_embedded"]["venues"][0]["postalCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() and "postalCode" in res["_embedded"]["venues"][0].keys() else "N/A",
+        "city":res["_embedded"]["venues"][0]["city"]["name"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() and "city" in res["_embedded"]["venues"][0].keys() and "name" in res["_embedded"]["venues"][0]["city"].keys() else "N/A",
+        "statecode":res["_embedded"]["venues"][0]["state"]["stateCode"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() and "state" in res["_embedded"]["venues"][0].keys() and "stateCode" in res["_embedded"]["venues"][0]["state"].keys() else "N/A",
+        "upcoming":res["_embedded"]["venues"][0]["url"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() and "url" in res["_embedded"]["venues"][0].keys() else "N/A",
         "img":res["_embedded"]["venues"][0]["images"] if "_embedded" in res.keys() and "venues" in res["_embedded"].keys() and "images" in res["_embedded"]["venues"][0].keys() else ""
     }
     jsonData = jsonify(data)

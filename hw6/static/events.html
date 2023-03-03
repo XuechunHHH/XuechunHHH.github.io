@@ -7,6 +7,14 @@
     <script src="../static/search.js"></script>
 </head>
 <body>
+    <script>
+        window.onload = function(){
+            checkStatus = document.getElementById("checkbox").checked;
+            if (checkStatus) {
+            document.getElementById("checkbox").checked = !checkStatus;
+            }
+        }
+    </script>
     <div id = "page">
         <div class="container" id="container">
         <form id="search">
@@ -20,7 +28,7 @@
                 <div>
                     <label class="label" for="distance" style="margin-right: 172px;">Distance(miles)</label>
                     <label class="label required" for="category">Category</label><br>
-                    <input class="distance" type="number" min="0" max="20" step="0.01" id="distance" name="distance" placeholder=10 required>
+                    <input class="distance" type="number" step="0.1" id="distance" name="distance" placeholder=10 required>
                     <select class="category" id="category" name="category" required>
                         <option class="option" value="Default" selected>Default</option>
                         <option class="option" value="Music">Music</option>
@@ -32,7 +40,7 @@
                 </div>
                 <div>
                     <label class="label required" for="location">Location</label>
-                    <input type="checkbox" id="checkbox" name="checkbox" style="margin-left: 10px;" onclick="changeState()">
+                    <input type="checkbox" id="checkbox" name="checkbox" style="margin-left: 10px;" unchecked onclick="changeState()">
                     <label class="checkbox" for="checkbox">Auto-Detect Location</label>
                     <input type="text" class="location" id="location" name="location" style="visibility: visible;" required>
                 </div>
