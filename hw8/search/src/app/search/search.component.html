@@ -1,0 +1,569 @@
+<div class="container-fluid" style="overflow-x: auto;">
+  <div class="row align-items-start mt-5 mb-5">
+    <div class="card container col-md-5 col-11 px-3">
+      <h1 class="text-white header mt-4 text-center border-white border-bottom p-3">
+        Events Search
+      </h1>
+      <form>
+        <div class="mb-3">
+          <label for="keyword" class="form-label formlabel required mb-0 mt-2">Keyword</label>
+          <input type="text" class="form-control" id="keyword" aria-describedby="emailHelp" [(ngModel)]="keyword"
+                 required [matAutocomplete]="auto" [formControl]="control">
+          <mat-autocomplete #auto="matAutocomplete">
+            <ng-container *ngIf="isLoading">
+              <mat-option [value]="">
+                <mat-spinner *ngIf="isLoading" diameter="30"></mat-spinner>
+              </mat-option>
+            </ng-container>
+            <ng-container *ngIf="!isLoading">
+              <mat-option *ngFor="let text of texts" [value]="text">
+                <span>{{text}}</span>
+              </mat-option>
+            </ng-container>
+          </mat-autocomplete>
+        </div>
+        <div class="mb-2 row">
+          <div class="col-md-6 col-11">
+            <label for="distance" class="form-label formlabel mb-0">Distance</label>
+            <input type="number" class="form-control" id="distance" placeholder=10 [(ngModel)]="distance"
+                   [ngModelOptions]="{standalone:true}">
+          </div>
+          <div class="col-md-5 col-10 mt-md-0 mt-3">
+            <label for="category" class="form-label formlabel required mb-0">Category</label>
+            <select class="form-select" aria-label="Default select example" id="category" [(ngModel)]="category"
+                    [ngModelOptions]="{standalone:true}">
+              <option value="Default" selected>Default</option>
+              <option value="Music">Music</option>
+              <option value="Sports">Sports</option>
+              <option value="Arts">Arts & Theatre</option>
+              <option value="Film">Film</option>
+              <option value="Miscellaneous">Miscellaneous</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="location" class="form-label formlabel required mb-0 mt-2">Location</label>
+          <input type="text" class="form-control" id="location" aria-describedby="emailHelp" [disabled]="autoDetect"
+                 [(ngModel)]="location" [ngModelOptions]="{standalone:true}" required>
+        </div>
+        <div class="mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="check" [(ngModel)]="autoDetect"
+                   [ngModelOptions]="{standalone:true}" (change)="location=''">
+            <label class="form-check-label formlabel" for="check">
+              Auto-detect your location
+            </label>
+          </div>
+        </div>
+        <div class="mb-5 text-center">
+          <button type="submit" class="btn btn-primary mx-2 btn-danger" (click)="submit()">SUBMIT</button>
+          <button type="submit" class="btn btn-primary mx-2" (click)="clear()">CLEAR</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="emptyDisplay" class="row align-items-start text-center m-5">
+    <div class="col"></div>
+    <div class="text-center container text-danger border-1 bg-body rounded-pill col-md-8 col-12 mt-md-5 mt-3 mb-2">No
+      results available
+    </div>
+    <div class="col"></div>
+  </div>
+</div>
+
+<div class="container-fluid table-wrapper">
+  <div *ngIf="tableDisplay" class="row mt-md-5 mt-3 mb-md-5 mb-3" style="overflow-x: auto;">
+    <div class="col-md mt-5"></div>
+    <div class="col-md-8" style="overflow-x: auto;">
+      <table class="table table-dark table-striped text-center table-responsive table">
+        <thead>
+        <tr>
+          <th class="col-2" scope="col">Date/Time</th>
+          <th class="col-1" scope="col">Icon</th>
+          <th class="col" scope="col">Event</th>
+          <th class="col-1" scope="col">Genre</th>
+          <th class="col-2 bdr" scope="col">Venue</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let event of searchTable" id="{{event['id']}}" (click)="showDetail(event['id'])"
+            style="cursor: pointer;">
+          <td *ngIf="event['localDate'] != null && event['localTime'] != null">
+            {{event['localDate']}} <br> {{event['localTime']}}
+          </td>
+          <td *ngIf="event['localDate'] == null">
+            N/A
+          </td>
+          <td>
+            <div class="image">
+              <div class="wrap">
+                <img class="img-fluid imgTable" src="{{event['icon']}}" alt="N/A">
+              </div>
+            </div>
+          </td>
+          <td *ngIf="event['event'] != null">
+            {{event['event']}}
+          </td>
+          <td *ngIf="event['event'] == null">
+            N/A
+          </td>
+          <td *ngIf="event['genre'] != null">
+            {{event['genre']}}
+          </td>
+          <td *ngIf="event['genre'] == null">
+            N/A
+          </td>
+          <td *ngIf="event['venue'] != null">
+            {{event['venue']}}
+          </td>
+          <td *ngIf="event['venue'] == null">
+            N/A
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md mt-5"></div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div *ngIf="detailDisplay" class="row align-items-center mt-md-5 mt-3 mb-md-5 mb-3 p-0">
+    <div class="container col-md-7 col-11 mb-5 px-0 pb-4">
+      <div class="p-3">
+        <span><i class="bi bi-chevron-left text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left"
+               viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+          </svg>
+        </i></span>
+        <span href="" class="text-decoration-underline text-white" (click)="returnTable()">Back</span>
+      </div>
+      <div class="text-center text-white">
+        <h2 style="display: inline-block;" class="m-3">{{eventDetail['name']}}</h2>
+        <button mat-mini-fab class="unliked" style="display: inline-block; height: 32px; width: 32px;" (click)="addLike()" *ngIf="!isLiked">
+          <mat-icon>favorite_border</mat-icon>
+        </button>
+        <button mat-mini-fab class="liked" style="display: inline-block; height: 32px; width: 32px;" (click)="removeLike()" *ngIf="isLiked">
+          <mat-icon>favorite</mat-icon>
+        </button>
+      </div>
+      <div class="p-0 text-white">
+        <mat-tab-group mat-align-tabs="center" mat-stretch-tabs="false">
+
+          <mat-tab label="&nbsp;&nbsp;&nbsp;Events&nbsp;&nbsp;&nbsp;">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-md-5 col-12 text-center">
+                  <div class="etag mt-3">Date</div>
+                  <div class="eword mt-1">{{eventDetail['localDate']}}</div>
+                  <div class="etag mt-3">Artist/Team</div>
+                  <div *ngIf="eventDetail['artist'].length == 0" class="eword mt-1">N/A</div>
+                  <div *ngIf="eventDetail['artist'].length == 1" class="eword mt-1">
+                    <span>{{eventDetail['artist'][0]}}</span>
+                  </div>
+                  <div *ngIf="eventDetail['artist'].length > 1" class="eword mt-1">
+                    <span>{{eventDetail['artist'][0]}}</span>
+                    <span *ngFor="let a of eventDetail['artist'].slice(1)"><span
+                      *ngIf="a!==null">&nbsp;|&nbsp;{{a}}</span></span>
+                  </div>
+                  <div class="etag mt-3">Venue</div>
+                  <div class="eword mt-1">{{eventDetail['venue']}}</div>
+                  <div class="etag mt-3">Genre</div>
+                  <div *ngIf="eventDetail['genre'].length == 0" class="eword mt-1">N/A</div>
+                  <div *ngIf="eventDetail['genre'].length == 1" class="eword mt-1">
+                    <span>{{eventDetail['genre'][0]}}</span>
+                  </div>
+                  <div *ngIf="eventDetail['genre'].length > 1" class="eword mt-1">
+                    <span>{{eventDetail['genre'][0]}}</span>
+                    <span *ngFor="let g of eventDetail['genre'].slice(1)"><span
+                      *ngIf="g!==null">&nbsp;|&nbsp;{{g}}</span></span>
+                  </div>
+                  <div class="etag mt-3">Price Ranges</div>
+                  <div *ngIf="eventDetail['pricerange'] == null" class="eword mt-1">N/A</div>
+                  <div *ngIf="eventDetail['pricerange'] != null" class="eword mt-1">
+                    {{eventDetail['pricerange']['min']}} - {{eventDetail['pricerange']['max']}}
+                  </div>
+                  <div class="etag mt-3">Ticket Status</div>
+                  <div class="eword mt-2" *ngIf="eventDetail['status'] =='onsale'">
+                    <span class="rounded-3 onsale px-2 py-1">On Sale</span>
+                  </div>
+                  <div class="eword mt-2" *ngIf="eventDetail['status'] =='offsale'">
+                    <span class="rounded-3 offsale px-2 py-1">Off Sale</span>
+                  </div>
+                  <div class="eword mt-2" *ngIf="eventDetail['status'] =='cancelled'">
+                    <span class="rounded-3 cancelled px-2 py-1">Cancelled</span>
+                  </div>
+                  <div class="eword mt-2" *ngIf="eventDetail['status'] =='postponed'">
+                    <span class="rounded-3 postponed px-2 py-1">Postponed</span>
+                  </div>
+                  <div class="eword mt-2" *ngIf="eventDetail['status'] =='rescheduled'">
+                    <span class="rounded-3 rescheduled px-2 py-1">Rescheduled</span>
+                  </div>
+                  <div class="etag mt-3">Buy Ticket At:</div>
+                  <div class="eword mt-2"><a href="{{eventDetail['url']}}" target="_blank" class="ticketMaster">Ticketmaster</a>
+                  </div>
+                </div>
+                <div class="col-md-7 col-12 text-center px-5 pt-md-5 pt-3">
+                  <div style="height: fit-content;" class="pt-md-3 pt-1">
+                    <img class="seatMap" src="{{eventDetail['seatmap']}}" alt="">
+                  </div>
+                </div>
+                <div class="text-center py-3" style="vertical-align:bottom;" *ngIf="eventDetail['url']">
+                  <div style="display: inline-block;">Share on:&nbsp;&nbsp;&nbsp;</div>
+                  <div style="display: inline-block;">
+                    <a style="color: #55acee;vertical-align:bottom;" href="{{twitter()}}" target="_blank">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="30px" height="30px" fill="currentColor"
+                           class="bi bi-twitter" viewBox="0 0 16 16">
+                        <path
+                          d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+                      </svg>
+                    </a>
+                    &nbsp;
+                    <a style="color: #2a2abd;vertical-align:bottom;font-size: 30px" href="{{facebook()}}"
+                       target="_blank">
+                      <i class="fa fa-facebook-square pt-1"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+          <mat-tab label="Artists/Teams">
+            <div class="p-5 row align-items-center"
+                 *ngIf="artists.length==0 || !eventDetail['genre'].includes('Music')">
+              <div class="col-md-1 col"></div>
+              <div
+                class="text-center container text-danger border-1 bg-body rounded-pill col-md-10 col-12 my-md-5 my-3">
+                No music related artist details to show
+              </div>
+              <div class="col-md-1 col"></div>
+            </div>
+
+            <div class="py-2 px-5" *ngIf="eventDetail['genre'].includes('Music') && artists.length==1">
+              <div class="row align-items-baseline">
+                <div class="col-md-3 col-12">
+                  <div class="mt-3 text-center" *ngIf="artists[0]['image']">
+                    <img class="artist rounded-circle" src="{{artists[0]['image']}}" alt=" ">
+                  </div>
+                  <div class="text-center artistName mt-2">{{artists[0]['name']}}</div>
+                </div>
+                <div class="col-md-3 col-12 text-center">
+                  <div class="artistTag mt-md-0 mt-3">Popularity</div>
+                  <div class="spinner mt-md-3 mt-2">
+                    <mat-progress-spinner color="accent" mode="determinate"
+                                          style="height: 30px; width: 30px; margin: auto"
+                                          value="{{artists[0]['popularity']}}">
+                    </mat-progress-spinner>
+                    <div class="text">{{artists[0]['popularity']}}</div>
+                  </div>
+                </div>
+                <div class="col-md-3 col-12 text-center">
+                  <div class="artistTag mt-md-0 mt-3">Followers</div>
+                  <div class="mt-md-3 mt-2 text-white">{{addCommas(artists[0]['followers'])}}</div>
+                </div>
+                <div class="col-md-3 col-12 text-center">
+                  <div class="artistTag mt-md-0 mt-3">Spotify Link</div>
+                  <div class="mt-md-3 mt-2 text-white">
+                    <a href="{{artists[0]['url']}}" target="_blank">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#008800"
+                           class="bi bi-spotify"
+                           viewBox="0 0 16 16">
+                        <path
+                          d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.669 11.538a.498.498 0 0 1-.686.165c-1.879-1.147-4.243-1.407-7.028-.77a.499.499 0 0 1-.222-.973c3.048-.696 5.662-.397 7.77.892a.5.5 0 0 1 .166.686zm.979-2.178a.624.624 0 0 1-.858.205c-2.15-1.321-5.428-1.704-7.972-.932a.625.625 0 0 1-.362-1.194c2.905-.881 6.517-.454 8.986 1.063a.624.624 0 0 1 .206.858zm.084-2.268C10.154 5.56 5.9 5.419 3.438 6.166a.748.748 0 1 1-.434-1.432c2.825-.857 7.523-.692 10.492 1.07a.747.747 0 1 1-.764 1.288z"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-4 mb-3 album">Album featuring {{artists[0]['name']}}</div>
+              <div class="row align-items-baseline">
+                <div class="col-md-4 col-12 text-center" *ngFor="let photo of artists[0]['album']">
+                  <img class="photo my-md-0 my-2" src="{{photo}}" alt=" ">
+                </div>
+              </div>
+            </div>
+
+            <div class="py-2 px-3" *ngIf="eventDetail['genre'].includes('Music') && artists.length > 1">
+              <div id="aritstsCarousel" class="carousel slide px-5" data-bs-touch="false">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <div class="row align-items-baseline">
+                      <div class="col-md-3 col-12">
+                        <div class="mt-3 text-center" *ngIf="artists[0]['image']">
+                          <img class="artist rounded-circle" src="{{artists[0]['image']}}" alt=" ">
+                        </div>
+                        <div class="text-center artistName mt-2">{{artists[0]['name']}}</div>
+                      </div>
+                      <div class="col-md-3 col-12 text-center">
+                        <div class="artistTag mt-md-0 mt-3">Popularity</div>
+                        <div class="spinner mt-md-3 mt-2">
+                          <mat-progress-spinner color="accent" mode="determinate"
+                                                style="height: 30px; width: 30px; margin: auto"
+                                                value="{{artists[0]['popularity']}}">
+                          </mat-progress-spinner>
+                          <div class="text">{{artists[0]['popularity']}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-12 text-center">
+                        <div class="artistTag mt-md-0 mt-3">Followers</div>
+                        <div class="mt-md-3 mt-2 text-white">{{addCommas(artists[0]['followers'])}}</div>
+                      </div>
+                      <div class="col-md-3 col-12 text-center">
+                        <div class="artistTag mt-md-0 mt-3">Spotify Link</div>
+                        <div class="mt-md-3 mt-2 text-white">
+                          <a href="{{artists[0]['url']}}" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#008800"
+                                 class="bi bi-spotify"
+                                 viewBox="0 0 16 16">
+                              <path
+                                d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.669 11.538a.498.498 0 0 1-.686.165c-1.879-1.147-4.243-1.407-7.028-.77a.499.499 0 0 1-.222-.973c3.048-.696 5.662-.397 7.77.892a.5.5 0 0 1 .166.686zm.979-2.178a.624.624 0 0 1-.858.205c-2.15-1.321-5.428-1.704-7.972-.932a.625.625 0 0 1-.362-1.194c2.905-.881 6.517-.454 8.986 1.063a.624.624 0 0 1 .206.858zm.084-2.268C10.154 5.56 5.9 5.419 3.438 6.166a.748.748 0 1 1-.434-1.432c2.825-.857 7.523-.692 10.492 1.07a.747.747 0 1 1-.764 1.288z"/>
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-4 mb-3 album">Album featuring {{artists[0]['name']}}</div>
+                    <div class="row align-items-baseline">
+                      <div class="col-md-4 col-12 text-center" *ngFor="let photo of artists[0]['album']">
+                        <img class="photo my-md-0 my-2" src="{{photo}}" alt=" ">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="carousel-item" *ngFor="let artist of artists.slice(1)">
+                    <div class="row align-items-baseline">
+                      <div class="col-md-3 col-12">
+                        <div class="mt-3 text-center" *ngIf="artist['image']">
+                          <img class="artist rounded-circle" src="{{artist['image']}}" alt=" ">
+                        </div>
+                        <div class="text-center artistName mt-2">{{artist['name']}}</div>
+                      </div>
+                      <div class="col-md-3 col-12 text-center">
+                        <div class="artistTag mt-md-0 mt-3">Popularity</div>
+                        <div class="spinner mt-md-3 mt-2">
+                          <mat-progress-spinner color="accent" mode="determinate"
+                                                style="height: 30px; width: 30px; margin: auto"
+                                                value="{{artist['popularity']}}">
+                          </mat-progress-spinner>
+                          <div class="text">{{artist['popularity']}}</div>
+                        </div>
+                      </div>
+                      <div class="col-md-3 col-12 text-center">
+                        <div class="artistTag mt-md-0 mt-3">Followers</div>
+                        <div class="mt-md-3 mt-2 text-white">{{addCommas(artist['followers'])}}</div>
+                      </div>
+                      <div class="col-md-3 col-12 text-center">
+                        <div class="artistTag mt-md-0 mt-3">Spotify Link</div>
+                        <div class="mt-md-3 mt-2 text-white">
+                          <a href="{{artist['url']}}" target="_blank">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="#008800"
+                                 class="bi bi-spotify"
+                                 viewBox="0 0 16 16">
+                              <path
+                                d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.669 11.538a.498.498 0 0 1-.686.165c-1.879-1.147-4.243-1.407-7.028-.77a.499.499 0 0 1-.222-.973c3.048-.696 5.662-.397 7.77.892a.5.5 0 0 1 .166.686zm.979-2.178a.624.624 0 0 1-.858.205c-2.15-1.321-5.428-1.704-7.972-.932a.625.625 0 0 1-.362-1.194c2.905-.881 6.517-.454 8.986 1.063a.624.624 0 0 1 .206.858zm.084-2.268C10.154 5.56 5.9 5.419 3.438 6.166a.748.748 0 1 1-.434-1.432c2.825-.857 7.523-.692 10.492 1.07a.747.747 0 1 1-.764 1.288z"/>
+                            </svg>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-4 mb-3 album">Album featuring {{artist['name']}}</div>
+                    <div class="row align-items-baseline">
+                      <div class="col-md-4 col-12 text-center" *ngFor="let photo of artist['album']">
+                        <img class="photo my-md-0 my-2" src="{{photo}}" alt=" ">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#aritstsCarousel"
+                        data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#aritstsCarousel"
+                        data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            </div>
+          </mat-tab>
+          <mat-tab label="&nbsp;&nbsp;&nbsp;Venue&nbsp;&nbsp;&nbsp;">
+            <div class="p-5 row align-items-center" *ngIf="emptyVenue">
+              <div class="col-md-1 col"></div>
+              <div
+                class="text-center container text-danger border-1 bg-body rounded-pill col-md-10 col-12 my-md-5 my-3">
+                No related venue details to show
+              </div>
+              <div class="col-md-1 col"></div>
+            </div>
+            <div class="container-fluid" *ngIf="venueDetail">
+              <div class="row">
+                <div class="col-md-6 col-12 text-center">
+                  <div class="etag mt-3">Name</div>
+                  <div class="eword mt-1" *ngIf="venue['name']">{{venue['name']}}</div>
+                  <div class="eword mt-1" *ngIf="!venue['name']">N/A</div>
+                  <div class="etag mt-3">Address</div>
+                  <div class="eword mt-1" *ngIf="venue['address'] && venue['city'] && venue['state']">
+                    {{venue['address']}}, {{venue['city']}}, {{venue['state']}}
+                  </div>
+                  <div class="eword mt-1" *ngIf="venue['address'] && venue['city'] && !venue['state']">
+                    {{venue['address']}}, {{venue['city']}}
+                  </div>
+                  <div class="eword mt-1" *ngIf="venue['address'] && !venue['city'] && venue['state']">
+                    {{venue['address']}}, {{venue['state']}}
+                  </div>
+                  <div class="eword mt-1" *ngIf="venue['address'] && !venue['city'] && !venue['state']">
+                    {{venue['address']}}
+                  </div>
+                  <div class="eword mt-1" *ngIf="!venue['address']">N/A</div>
+                  <div class="etag mt-3">Phone Number</div>
+                  <div class="wrapContainer mt-1" id="telcon" *ngIf="venue['tel']">
+                    <div class="eword" id="tel">{{venue['tel']}}</div>
+                  </div>
+                  <div class="eword mt-1" id="telmore" *ngIf="venue['tel'] && moreButton('tel')">
+                    <span><a href="javascript:void(0)" class="showButton" style=""
+                             (click)="showMore('telmore','telless','telcon')">Show More</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="eword mt-1" id="telless" style="display: none;" *ngIf="venue['tel']">
+                    <span><a href="javascript:void(0)" class="showButton" (click)="showLess('telmore','telless','telcon')">Show
+                      Less</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                      </svg>
+                    </span>
+                  </div>
+
+                  <div class="eword mt-1" *ngIf="!venue['tel']">N/A</div>
+                </div>
+                <div class="col-md-6 col-12 text-center">
+                  <div class="etag mt-3" *ngIf="venue['openHour']">Open Hours</div>
+                  <div class="wrapContainer mt-1" id="hourcon" *ngIf="venue['openHour']">
+                    <div class="eword" id="hour">{{venue['openHour']}}</div>
+                  </div>
+                  <div class="eword mt-1 text-center" id="hourmore" *ngIf="venue['openHour'] && moreButton('hour')">
+                    <span><a href="javascript:void(0)" class="showButton" (click)="showMore('hourmore','hourless','hourcon')">Show More</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="eword mt-1" id="hourless" style="display: none;" *ngIf="venue['openHour']">
+                    <span><a href="javascript:void(0)" class="showButton" (click)="showLess('hourmore','hourless','hourcon')">Show
+                      Less</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="etag mt-3" *ngIf="venue['generalRule']">General Rule</div>
+                  <div class="wrapContainer mt-1" id="generalcon" *ngIf="venue['generalRule']">
+                    <div class="eword" id="general">{{venue['generalRule']}}</div>
+                  </div>
+                  <div class="eword mt-1" id="generalmore" *ngIf="venue['generalRule'] && moreButton('general')">
+                    <span><a href="javascript:void(0)" class="showButton"
+                             (click)="showMore('generalmore','generalless','generalcon')">Show More</a>
+                    </span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="eword mt-1" id="generalless" style="display: none;" *ngIf="venue['generalRule']">
+                    <span><a href="javascript:void(0)" class="showButton"
+                             (click)="showLess('generalmore','generalless','generalcon')">Show Less</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="etag mt-3" *ngIf="venue['childRule']">Child Rule</div>
+                  <div class="wrapContainer mt-1" id="childcon" *ngIf="venue['childRule']">
+                    <div class="eword" id="child">{{venue['childRule']}}</div>
+                  </div>
+                  <div class="eword mt-1" id="childmore" *ngIf="venue['childRule'] && moreButton('child')">
+                    <span><a href="javascript:void(0)" class="showButton"
+                             (click)="showMore('childmore','childless','childcon')">Show
+                      More</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-down" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div class="eword mt-1" id="childless" style="display: none;" *ngIf="venue['childRule']">
+                    <span><a href="javascript:void(0)" class="showButton"
+                             (click)="showLess('childmore','childless','childcon')">Show
+                      Less</a></span>
+                    <span class="text-center text-white">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
+                           class="bi bi-chevron-up" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd"
+                              d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708l6-6z"/>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div class="text-center col-12 pt-md-4 pt-3">
+                  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop" (click)="venueLoc()">
+                    Show venue on Google map
+                  </button>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+    </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="false" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5 mt-0" style="margin: 0 0 0 0;" id="staticBackdropLabel">Event Venue</h1>
+          </div>
+          <div class="modal-body" id="modalbody">
+          <div class="text-center" *ngIf="venueMap">
+            <google-map [width]="getWidth()" [height]="380" [options]="{
+            center: { lat: venueLat, lng: venueLng },
+            zoom : 14
+            }">
+              <map-marker [position]="{ lat: venueLat, lng: venueLng }"></map-marker>
+            </google-map>
+          </div>
+          <div class="text-start m-2">
+            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+

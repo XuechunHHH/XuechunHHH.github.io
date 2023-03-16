@@ -1,0 +1,15 @@
+@media (max-width: 767px) {
+  .table-responsive {
+    overflow-x: auto;
+    width: 120%;
+    max-width: none;
+  }
+}
+
+.table {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+
+

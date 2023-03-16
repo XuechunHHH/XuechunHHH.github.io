@@ -1,0 +1,274 @@
+.container{
+  background-color:rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(5px);
+}
+
+.header{
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+@media (min-width: 767px) {
+  .custom-tab .mat-tab-label {
+    width: 20%;
+  }
+}
+
+.formlabel{
+  color:rgb(75, 169, 169);
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.mat-mdc-tab-labels{
+  background-color:rgb(75, 169, 169);
+}
+
+.mat-mdc-tab .mdc-tab__text-label, .mat-mdc-tab-link .mdc-tab__text-label{
+  color:white;
+}
+
+.mat-mdc-tab:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label, .mat-mdc-tab-link:not(.mat-mdc-tab-disabled).mdc-tab--active .mdc-tab__text-label {
+  color: white;
+}
+
+.required::after{
+  content: '*';
+  color:red;
+}
+
+.image {
+  margin: auto;
+  max-width: 100px;
+}
+
+.wrap {
+  text-align: left;
+  width:100%;
+  height:0px;
+  padding-bottom:100%;
+  position:relative;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 10px 10px 0 0;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.table thead th:first-child {
+  border-top-left-radius: 15px;
+}
+
+.table thead th:last-child {
+  border-top-right-radius: 15px;
+}
+
+.imgTable {
+  width:100%;
+  height:100%;
+  position:absolute;
+}
+
+td {
+  text-align: center;
+}
+
+@media (max-width: 767px) {
+  .table-responsive {
+    overflow-x: auto;
+    width: 120%;
+    max-width: none;
+  }
+}
+
+.etag{
+  color:aquamarine;
+  font-family: Calibri;
+  font-size: large;
+}
+
+.artistName{
+  color: aquamarine;
+  font-size: x-large;
+  font-family: Calibri;
+}
+
+.artistTag{
+  color: aquamarine;
+  font-size: large;
+  font-family: Calibri;
+}
+
+.album{
+  color: aquamarine;
+  font-family: Calibri;
+  font-size: medium;
+}
+
+.photo{
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .photo{
+    width: 150px;
+  }
+  .album{
+    color: aquamarine;
+    font-family: Calibri;
+    font-size: medium;
+    text-align: center;
+  }
+  .artist{
+    width:120px !important;
+  }
+}
+
+.wrapContainer{
+  max-height: 42px;
+  overflow:hidden;
+}
+
+
+
+.eword{
+  color:white;
+  font-family: Calibri;
+  font-size: medium;
+}
+
+.onsale{
+  background-color: green;
+}
+
+.offsale{
+  background-color: red;
+}
+
+.cancelled{
+  background-color: black;
+}
+
+.postponed .rescheduled{
+  background-color: orange;
+}
+
+.ticketMaster{
+  color: blue;
+  text-decoration: underline blue;
+}
+
+.ticketMaster :hover{
+  color: blue;
+  text-decoration: underline blue;
+}
+
+.ticketMaster :visited{
+  color: blue;
+  text-decoration: underline blue;
+}
+
+.showButton{
+  color: #0080ff;
+  text-decoration: underline #0080ff;
+}
+
+.showButton :hover{
+  color: #0080ff;
+  text-decoration: underline #0080ff;
+}
+
+.showButton :visited{
+  color: #0080ff;
+  text-decoration: underline #0080ff;
+}
+
+.mdc-tab__text-label {
+  font-size: smaller;
+}
+
+@media (max-width: 767px) {
+  .mdc-tab {
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+  }
+}
+
+.seatMap{
+  width:100%;
+}
+
+.artist{
+  width:100%;
+}
+
+.mat-mdc-tab-body-content{
+  overflow: hidden !important;
+}
+
+.text {
+  position: absolute;
+  color: white;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: small;
+}
+
+.spinner {
+  position: relative;
+  display: inline-block;
+}
+
+.carousel-control-next{
+  justify-content: right !important;
+}
+
+.carousel-control-prev{
+  justify-content: left !important;
+}
+
+.bi-spotify{
+  height: 30px !important;
+  width: 30px !important;
+  fill: #008800 !important;
+}
+
+.bi-twitter{
+  height: 30px !important;
+  width: 30px !important;
+}
+
+.mat-mdc-mini-fab.mat-accent.unliked {
+  --mdc-fab-container-color: white;
+  --mdc-fab-icon-color: black;
+  --mat-mdc-fab-color: black;
+}
+
+.mat-mdc-mini-fab.mat-accent.liked {
+  --mdc-fab-container-color: white;
+  --mdc-fab-icon-color: red;
+  --mat-mdc-fab-color: red;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 22px;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
