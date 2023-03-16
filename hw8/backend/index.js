@@ -164,12 +164,16 @@ app.get('/event', (req, res) => {
                 var attractions = null;
             }
             var artist = [];
-            for (var i=0;i<attractions.length;++i){
+            if(attractions !== null) {
                 try {
-                    artist.push(attractions[i]["name"]);
-                }catch (e){
-                    artist.push(null);
-                }
+                    for (var i = 0; i < attractions.length; ++i) {
+                        try {
+                            artist.push(attractions[i]["name"]);
+                        } catch (e) {
+                            artist.push(null);
+                        }
+                    }
+                }catch (e){}
             }
             try {
                 var venue = data["_embedded"]["venues"][0]["name"];
@@ -234,7 +238,8 @@ app.get('/event', (req, res) => {
                 pricerange: pricerange,
                 status: status,
                 url: url,
-                seatmap: seatmap
+                seatmap: seatmap,
+                id: id
             };
             res.status(200).send(dic);
         })
@@ -246,7 +251,7 @@ app.get('/event', (req, res) => {
 app.get('/artist', (req, res) => {
     var name = req.query.name;
 
-    var SpotifyWebApi = require('spotify-web-api-node');
+    // var SpotifyWebApi = require('spotify-web-api-node');
 // credentials are optional
     var spotifyApi = new SpotifyWebApi({
         clientId: 'c4bb7efcffd34c10a562caa8f9a53bd7',
@@ -262,7 +267,7 @@ app.get('/artist', (req, res) => {
                 .then(function(data) {
                     try {
                         var returnNames = data.body["artists"]["items"];
-                        // console.log(returnNames);
+                        console.log(returnNames);
                     }catch (e){
                         var returnNames = {};
                     }
