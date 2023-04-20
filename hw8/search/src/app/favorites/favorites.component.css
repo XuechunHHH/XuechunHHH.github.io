@@ -11,5 +11,7 @@
   overflow: hidden;
 }
 
-
+.trash :hover{
+  cursor: pointer;
+}
 

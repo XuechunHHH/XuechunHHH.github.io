@@ -202,7 +202,7 @@ export class SearchComponent implements OnInit {
   }
 
   async showArtist(i: any) {
-    var res = await this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/artist?name=" + this.eventDetail['artist'][i]).toPromise();
+    var res = await this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/artist?name=" + this.eventDetail['artist'][i].replaceAll('&','%26')).toPromise();
     console.log(res);
     // @ts-ignore
     if (Object.keys(res).length !== 0) {
@@ -215,6 +215,18 @@ export class SearchComponent implements OnInit {
     artist['album'] = responce;
     console.log(this.artists);
     this.artists.push(artist);
+  }
+
+  artistsOrder():any{
+    var artistsOrdered = [];
+    for (var i = 0; i < this.eventDetail['artist'].length; ++i) {
+      for (var j = 0; j<this.artists.length;++j){
+        if (this.eventDetail['artist'][i].toLowerCase() == this.artists[j]['name'].toLowerCase()){
+          artistsOrdered.push(this.artists[j]);
+        }
+      }
+    }
+    return artistsOrdered;
   }
 
   addCommas(num: any) {

@@ -1,19 +1,38 @@
 runtime: nodejs18
+#handlers:
+#  - url: /
+#    static_files: dist/index.html
+#    upload: dist/index.html
+#  - url: /(.*)
+#    static_files: dist/index.html
+#    upload: dist/index.html
+#  - url: /
+#    static_dir: dist
+#  - url: /runtime.0cc5e95bc8b35f11.js
+#    static_files: dist/runtime.0cc5e95bc8b35f11.js
+#    upload: dist/runtime.0cc5e95bc8b35f11.js
+#    mime_type: application/javascript
+#  - url: /polyfills.67aa12dbf2375313.js
+#    static_files: dist/polyfills.67aa12dbf2375313.js
+#    upload: dist/polyfills.67aa12dbf2375313.js
+#    mime_type: application/javascript
+#  - url: /main.4e01f1b947364702.js
+#    static_files: dist/main.4e01f1b947364702.js
+#    upload: dist/main.4e01f1b947364702.js
+#    mime_type: application/javascript
+
 handlers:
   - url: /
+    secure: always
     static_files: dist/index.html
     upload: dist/index.html
-  - url: /
-    static_dir: dist
-  - url: /runtime.0cc5e95bc8b35f11.js
-    static_files: dist/runtime.0cc5e95bc8b35f11.js
-    upload: dist/runtime.0cc5e95bc8b35f11.js
-    mime_type: application/javascript
-  - url: /polyfills.67aa12dbf2375313.js
-    static_files: dist/polyfills.67aa12dbf2375313.js
-    upload: dist/polyfills.67aa12dbf2375313.js
-    mime_type: application/javascript
-  - url: /main.4e01f1b947364702.js
-    static_files: dist/main.4e01f1b947364702.js
-    upload: dist/main.4e01f1b947364702.js
-    mime_type: application/javascript
+
+  - url: /(.*\.(.+))$
+    secure: always
+    static_files: dist/\1
+    upload: dist/(.*\.(.+))$
+
+  - url: /(.*)
+    secure: always
+    static_files: dist/index.html
+    upload: dist/index.html

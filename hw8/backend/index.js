@@ -124,7 +124,16 @@ app.get('/search', (req, res) => {
                         genre: genre
                     };
                     form.push(dic);
+                    console.log(form)
                 }
+                form = form.sort((a, b) => {
+                    if ((a.localDate).localeCompare(b.localDate) == 0) {
+                        return (a.localTime).localeCompare(b.localTime)
+                    } else {
+                        return (a.localDate).localeCompare(b.localDate);
+                    }
+                });
+                console.log(form)
                 res.status(200).send(form);
             }
         })
@@ -170,7 +179,7 @@ app.get('/event', (req, res) => {
                         try {
                             artist.push(attractions[i]["name"]);
                         } catch (e) {
-                            artist.push(null);
+
                         }
                     }
                 }catch (e){}
@@ -184,35 +193,30 @@ app.get('/event', (req, res) => {
             try {
                 genre.push(data["classifications"][0]["segment"]["name"]);
             }catch (e){
-                genre.push(null);
             }
             try {
                 if (!genre.includes(data["classifications"][0]["genre"]["name"]) && data["classifications"][0]["genre"]["name"] !== 'Undefined'){
                     genre.push(data["classifications"][0]["genre"]["name"]);
                 }
             }catch (e){
-                genre.push(null);
             }
             try {
                 if (!genre.includes(data["classifications"][0]["subGenre"]["name"]) && data["classifications"][0]["subGenre"]["name"] !== 'Undefined'){
                     genre.push(data["classifications"][0]["subGenre"]["name"]);
                 }
             }catch (e){
-                genre.push(null);
             }
             try {
                 if (!genre.includes(data["classifications"][0]["type"]["name"]) && data["classifications"][0]["type"]["name"] !== 'Undefined'){
                     genre.push(data["classifications"][0]["type"]["name"]);
                 }
             }catch (e){
-                genre.push(null);
             }
             try {
                 if (!genre.includes(data["classifications"][0]["subType"]["name"]) && data["classifications"][0]["subType"]["name"] !== 'Undefined'){
                     genre.push(data["classifications"][0]["subType"]["name"]);
                 }
             }catch (e){
-                genre.push(null);
             }
             try {
                 var pricerange = data["priceRanges"][0];
@@ -250,6 +254,7 @@ app.get('/event', (req, res) => {
 
 app.get('/artist', (req, res) => {
     var name = req.query.name;
+    console.log(name);
 
     // var SpotifyWebApi = require('spotify-web-api-node');
 // credentials are optional
@@ -267,7 +272,7 @@ app.get('/artist', (req, res) => {
                 .then(function(data) {
                     try {
                         var returnNames = data.body["artists"]["items"];
-                        console.log(returnNames);
+                        // console.log(returnNames);
                     }catch (e){
                         var returnNames = {};
                     }
@@ -276,10 +281,19 @@ app.get('/artist', (req, res) => {
                     for (var i=0;i<returnNames.length;++i){
                         cnt ++;
                         var artist = {};
+
+                        console.log(returnNames[i]["name"]);
                         if (returnNames[i]["name"].toUpperCase() === name.toUpperCase()){
                             artist["name"] = returnNames[i]["name"];
                             try {
-                                artist["followers"] = returnNames[i]["followers"]["total"];
+                                var followers = returnNames[i]["followers"]["total"];
+                                if (followers >= 1000000) {
+                                    artist["followers"] = `${Math.round(followers / 1000000)}M`;
+                                } else if (followers >= 1000){
+                                    artist["followers"] = `${Math.round(followers / 1000)}K`;
+                                } else {
+                                    artist["followers"] = `${followers}`;
+                                }
                             }catch (e){
                                 artist["followers"] = null;
                             }
