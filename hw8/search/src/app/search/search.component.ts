@@ -110,7 +110,7 @@ export class SearchComponent implements OnInit {
         }
       )
     } else {
-      this.http.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + this.location + "&key=AIzaSyBPQYD1haDattmC5HT9njXNSyQIcELGw9Q").subscribe(
+      this.http.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + this.location + "&key=AIzaSyB63jkF2aaHlOMuYTc0iTH0UXwZYvBp8dA").subscribe(
         (res: any) => {
           if (res['results'].length == 0) {
             this.showEmpty();
@@ -304,7 +304,7 @@ export class SearchComponent implements OnInit {
 
   venueLoc(){
     this.venueMap = false;
-    this.http.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + this.venue['address'] +','+this.venue['city']+','+this.venue['state']+ "&key=AIzaSyBPQYD1haDattmC5HT9njXNSyQIcELGw9Q").subscribe(
+    this.http.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + this.venue['address'] +','+this.venue['city']+','+this.venue['state']+ "&key=AIzaSyB63jkF2aaHlOMuYTc0iTH0UXwZYvBp8dA").subscribe(
       (res: any) => {
         if (res['results'].length == 0) {
           return;
