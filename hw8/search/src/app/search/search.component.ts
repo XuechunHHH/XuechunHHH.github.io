@@ -69,7 +69,7 @@ export class SearchComponent implements OnInit {
 
 
   callAutocomplete(text: string): any {
-    this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/suggest?keyword=" + text).subscribe(
+    this.http.get("https://backend-nodejs-390505.wl.r.appspot.com/suggest?keyword=" + text).subscribe(
       (res) => {
         this.texts = res;
         this.isLoading = false;
@@ -127,7 +127,7 @@ export class SearchComponent implements OnInit {
   }
 
   search(lat: any, lng: any) {
-    this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/search?lat=" + lat + "&lng=" + lng +
+    this.http.get("https://backend-nodejs-390505.wl.r.appspot.com/search?lat=" + lat + "&lng=" + lng +
       "&keyword=" + this.keyword + "&category=" + this.category + "&distance=" + this.distance).subscribe(
       (res: any) => {
         // console.log(res);
@@ -167,7 +167,7 @@ export class SearchComponent implements OnInit {
 
   showDetail(id: any) {
     console.log(id);
-    this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/event?id=" + id).subscribe(
+    this.http.get("https://backend-nodejs-390505.wl.r.appspot.com/event?id=" + id).subscribe(
       (res: any) => {
         console.log(res);
         this.eventDetail = res;
@@ -202,7 +202,7 @@ export class SearchComponent implements OnInit {
   }
 
   async showArtist(i: any) {
-    var res = await this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/artist?name=" + this.eventDetail['artist'][i].replaceAll('&','%26')).toPromise();
+    var res = await this.http.get("https://backend-nodejs-390505.wl.r.appspot.com/artist?name=" + this.eventDetail['artist'][i].replaceAll('&','%26')).toPromise();
     console.log(res);
     // @ts-ignore
     if (Object.keys(res).length !== 0) {
@@ -211,7 +211,7 @@ export class SearchComponent implements OnInit {
   }
 
   async showAlbum(artist:any) {
-    var responce = await this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/album?id=" + artist['id']).toPromise();
+    var responce = await this.http.get("https://backend-nodejs-390505.wl.r.appspot.com/album?id=" + artist['id']).toPromise();
     artist['album'] = responce;
     console.log(this.artists);
     this.artists.push(artist);
@@ -234,7 +234,7 @@ export class SearchComponent implements OnInit {
   }
 
   showVenue(str: any){
-    this.http.get("https://backend-dot-node-js-378101.wl.r.appspot.com/venue?str="+str).subscribe(
+    this.http.get("https://backend-nodejs-390505.wl.r.appspot.com/venue?str="+str).subscribe(
       (res:any)=>{
         this.venue = res;
         if (Object.keys(res).length == 0){
